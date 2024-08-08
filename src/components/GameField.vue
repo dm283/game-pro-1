@@ -201,17 +201,19 @@ const hoverCell = (posY, posX) => {
     areaCellInfoData.figure.player = figure.player
     areaCellInfoData.figure.posId = figure.posId
   }
+};
 
-}
 
+const checkNewPos = (y, x) => {
+  // return true if new pos is correct
+  if (y == 0 || y == 15) {  // || x == 0 || x == 5
+    return true;
+  }
 
-// const checkNewPos = (y, x) => {
-//   // return true if new pos is correct
-//   if (y == 0 || y == 5) {  // || x == 0 || x == 5
-//     return true;
-//   }
-//   return false;
-// };
+  figSelectToggle(state.selectedFigureId, 'unselect');
+  hoverCell(y, x);
+  return false;
+};
 
 
 const selectCell = (posY, posX) => {
@@ -221,11 +223,11 @@ const selectCell = (posY, posX) => {
 
   // option 1  -  select figure  *********************************************************************************************************
   if ( cellSelected.figId !== '' & state.status == 'unselected' ) {  
-    let rootCell = cellsInfo[cellSelected.rootCellPos.y][cellSelected.rootCellPos.x];
-    let figId = rootCell.colFigIds[ rootCell.colFigIds.length - 1 ];
+    // let rootCell = cellsInfo[cellSelected.rootCellPos.y][cellSelected.rootCellPos.x];                    // opt1 - detecgt root via cell
+    let rootCell = cellsInfo[figures[cellSelected.figId].rootPos.y][figures[cellSelected.figId].rootPos.x]  // opt2 - detect root via figure
+    let figId = rootCell.colFigIds[ rootCell.colFigIds.length - 1 ];    
 
     // unable select not current player figure
-    console.log('figures[figId] =', figures[figId])
     if (figures[figId].player !== state.currentPlayer) {
       return 1;
     }
@@ -261,17 +263,18 @@ const selectCell = (posY, posX) => {
 
   // option 4  -  replace figure ************************************************
   // else if ( state.status == 'selected' & checkNewPos(posY, posX) ) {  
-  else if ( state.status == 'selected' ) {  
+  else if ( state.status == 'selected' & checkNewPos(posY, posX) ) {  
     let figId = state.selectedFigureId;
     let rootCell = cellsInfo[cellSelected.rootCellPos.y][cellSelected.rootCellPos.x];
 
-    let adaptPosY = cellSelected.rootCellPos.y;    /////
-    let adaptPosX = cellSelected.rootCellPos.x     /////
+    // let adaptPosY = cellSelected.rootCellPos.y;    /////
+    // let adaptPosX = cellSelected.rootCellPos.x     /////
+    let adaptPosY = posY;
+    let adaptPosX = posX;
     let adaptCellSelected = cellsInfo[adaptPosY][adaptPosX]; /////
 
     // unable to move backward
     let newPosId = (figures[figId].player == 'red') ? adaptCellSelected.posIdRed : adaptCellSelected.posIdBlue;
-    console.log(figures[figId].posId, newPosId)
     if (newPosId <= figures[figId].posId) {
       figSelectToggle(state.selectedFigureId, 'unselect');
       hoverCell(adaptPosY, adaptPosX);
@@ -309,7 +312,7 @@ const selectCell = (posY, posX) => {
     rootCellPrev.colFigIds.pop();   
 
     // change info in figure
-    figures[figId].rootPos.y = (adaptPosY < 8) ? 0: 15;
+    figures[figId].rootPos.y = rootCell.rootCellPos.y //(adaptPosY < 8) ? 0: 15;
     figures[figId].rootPos.x = adaptPosX;
     figures[figId].xyPos.y = adaptPosY;
     figures[figId].xyPos.x = adaptPosX;
