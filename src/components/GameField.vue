@@ -3,6 +3,16 @@ import { reactive, ref } from 'vue';
 import Figure from './Figure.vue';
 import CellData from './CellData.vue';
 
+
+const rows = []; const cells = [];
+for (let i=0; i<6; i++) { rows[i] = i;  cells[i] = i; }
+
+const state = {
+  status: 'unselected',
+  selectedFigureId: '',
+  currentPlayer: 'red',
+}
+
 const showData = ref(false);
 
 const areaCellInfoData = reactive({
@@ -22,15 +32,13 @@ const areaCellInfoData = reactive({
     color: '',
     player: ''
   },
+  state: {
+    status: state.status,
+    selectedFigureId: state.selectedFigureId,
+    currentPlayer: state.currentPlayer,
+  }
 })
 
-const rows = []; const cells = [];
-for (let i=0; i<6; i++) { rows[i] = i;  cells[i] = i; }
-
-const state = {
-  status: 'unselected',
-  selectedFigureId: Number,
-}
 
 const fig = (id, color, x, y, rootY, player) => {
   // create a figure
@@ -116,6 +124,7 @@ const figSelectToggle = (id, action) => {
   }
   else if (action == 'unselect') {
     state.status = 'unselected';
+    state.selectedFigureId = '';
     figures[id].selected = false;
     figures[id].color = colorsList[id][0];
   }
@@ -126,6 +135,11 @@ const hoverCell = (posY, posX) => {
   // hovered cell actions
   showData.value = true;
   let cellHovered = cellsInfo[posY][posX];
+
+  areaCellInfoData.state.status = state.status;
+  areaCellInfoData.state.selectedFigureId = state.selectedFigureId;
+  areaCellInfoData.state.currentPlayer = state.currentPlayer;
+
   areaCellInfoData.cell.posX = posX;
   areaCellInfoData.cell.posY = posY;
   areaCellInfoData.cell.figId = cellHovered.figId;
@@ -158,7 +172,12 @@ const selectCell = (posY, posX) => {
   if ( cellSelected.figId !== '' & state.status == 'unselected' ) {  
     let rootCell = cellsInfo[cellSelected.rootCellPos.y][cellSelected.rootCellPos.x];
     let figId = rootCell.colFigIds[ rootCell.colFigIds.length - 1 ];
-    console.log(rootCell)
+
+    // unable select not current player figure
+    if (figures[figId].player !== state.currentPlayer) {
+      return 1;
+    }
+    
     figSelectToggle(figId, 'select');
     hoverCell(posY, posX);
     return 0;
@@ -184,6 +203,12 @@ const selectCell = (posY, posX) => {
 
     // if selected cell has some figures - count new Y of position when it will be not a root cell ***************************
     if (cellSelected.figId !== '') { 
+
+      // unable moving to another player ocuppied cell
+      if ( figures[cellSelected.figId].player !== state.currentPlayer ) { 
+        return 1;
+       }
+
       if (posY == 5) {
         posY = posY - rootCell.colFigIds.length 
       }
@@ -212,6 +237,8 @@ const selectCell = (posY, posX) => {
     figures[figId].xyPos.y = posY;
     figures[figId].xyPos.x = posX;
     figSelectToggle(figId, 'unselect');
+    
+    state.currentPlayer = (state.currentPlayer == 'red') ? 'blue' : 'red';
 
     hoverCell(posY, posX);
 
@@ -249,6 +276,6 @@ const leaveGameField = () => {
     </table>
   </section>
 
-  <CellData :data=areaCellInfoData v-show="showData" />
+  <CellData :data=areaCellInfoData :showD=showData />
 
 </template>
