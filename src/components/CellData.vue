@@ -10,7 +10,7 @@ defineProps({
 
 <template>
 
-<div class="grid grid-cols-3 gap-2 mt-10 w-max">
+<div class="grid grid-rows-3 mt-5 ml-5 gap-2 w-max">
 
   <div class="w-60 border rounded-md overflow-hidden text-green-600 text-sm text-center">
   <div class="bg-pink-400 text-white font-semibold">state</div>
