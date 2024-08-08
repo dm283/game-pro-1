@@ -205,11 +205,22 @@ const selectCell = (posY, posX) => {
   }
 
   // option 3  -  trying to replace to the same column
-  else if ( cellSelected.figId !== '' & state.status == 'selected' & posX == figures[state.selectedFigureId].xyPos.x ) {  
-    figSelectToggle(state.selectedFigureId, 'unselect');
-    hoverCell(posY, posX);
-    return 0;
-  }
+  // else if ( cellSelected.figId !== '' & state.status == 'selected' & posX == figures[state.selectedFigureId].xyPos.x ) {  
+    
+  //   console.log('same col case')
+  //   console.log('cellSelected=', cellSelected)
+  //   let figId = state.selectedFigureId;
+  //   let newPosId = (figures[figId].player == 'red') ? cellSelected.posIdRed : cellSelected.posIdBlue;
+  //   console.log(figures[figId].posId, newPosId)
+  //   if (newPosId == figures[figId].posId) {
+  //     console.log('impossible due to same col case')
+  //     figSelectToggle(state.selectedFigureId, 'unselect');
+  //     hoverCell(posY, posX);
+  //     return 1;
+  //   }    
+  //   console.log('check for same col case is ok')
+
+  // }
 
   // option 4  -  replace figure ************************************************
   else if ( state.status == 'selected' & checkNewPos(posY, posX) ) {  
@@ -220,7 +231,8 @@ const selectCell = (posY, posX) => {
     let newPosId = (figures[figId].player == 'red') ? cellSelected.posIdRed : cellSelected.posIdBlue;
     console.log(figures[figId].posId, newPosId)
     if (newPosId <= figures[figId].posId) {
-      console.log('backward')
+      figSelectToggle(state.selectedFigureId, 'unselect');
+      hoverCell(posY, posX);
       return 1;
     }
 
