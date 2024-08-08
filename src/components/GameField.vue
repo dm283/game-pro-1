@@ -4,7 +4,7 @@ import Figure from './Figure.vue';
 import CellData from './CellData.vue';
 
 const commonClass = ref("bg-green-100 border border-4 border-green-600 w-14 text-center hover:bg-green-200");
-const rootClass = ref("bg-blue-100 border border-4 border-green-600 w-14 text-center hover:bg-green-200");
+const rootClass = ref("bg-blue-100 border border-4 border-green-600 w-14 text-center hover:bg-blue-200");
 
 const rows = []; const cells = [];
 for (let i=0; i<16; i++) { rows[i] = i;  };
@@ -238,26 +238,8 @@ const selectCell = (posY, posX) => {
     return 0;
   }
 
-  // option 3  -  trying to replace to the same column
-  // else if ( cellSelected.figId !== '' & state.status == 'selected' & posX == figures[state.selectedFigureId].xyPos.x ) {  
-    
-  //   console.log('same col case')
-  //   console.log('cellSelected=', cellSelected)
-  //   let figId = state.selectedFigureId;
-  //   let newPosId = (figures[figId].player == 'red') ? cellSelected.posIdRed : cellSelected.posIdBlue;
-  //   console.log(figures[figId].posId, newPosId)
-  //   if (newPosId == figures[figId].posId) {
-  //     console.log('impossible due to same col case')
-  //     figSelectToggle(state.selectedFigureId, 'unselect');
-  //     hoverCell(posY, posX);
-  //     return 1;
-  //   }    
-  //   console.log('check for same col case is ok')
-
-  // }
 
   // option 4  -  replace figure ************************************************
-  // else if ( state.status == 'selected' & checkNewPos(posY, posX) ) {  
   else if ( state.status == 'selected' & checkNewPos(posY, posX) ) {  
     let figId = state.selectedFigureId;
     let rootCell = cellsInfo[cellSelected.rootCellPos.y][cellSelected.rootCellPos.x];
