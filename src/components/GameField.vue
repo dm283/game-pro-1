@@ -23,11 +23,14 @@ const areaCellInfoData = reactive({
     isRoot: '',
     rootCellPos: {y: '', x: ''},
     colFigIds: [],
+    posIdRed: '',
+    posIdBlue: '',
   },
   figure: {
     id: '',
     rootPos: {y: '', x: ''},
     xyPos: {y: '', x: ''},
+    posId: '',
     selected: '',
     color: '',
     player: ''
@@ -40,7 +43,7 @@ const areaCellInfoData = reactive({
 })
 
 
-const fig = (id, color, x, y, rootY, player) => {
+const fig = (id, color, x, y, rootY, player, posId) => {
   // create a figure
   return reactive({                             
     id: id,
@@ -49,6 +52,7 @@ const fig = (id, color, x, y, rootY, player) => {
     selected: false,
     color: color,
     player: player,
+    posId: posId,
   })
 };
 
@@ -66,12 +70,12 @@ const colorsList = [
 
 // list of figures
 const figures = [
-  fig(0, colorsList[0][0], 0, 5, 5, 'red'),
-  fig(1, colorsList[1][0], 0, 4, 5, 'red'),
-  fig(2, colorsList[2][0], 0, 3, 5, 'red'),
-  fig(3, colorsList[3][0], 5, 0, 0, 'blue'),
-  fig(4, colorsList[4][0], 5, 1, 0, 'blue'),
-  fig(5, colorsList[5][0], 5, 2, 0, 'blue'),
+  fig(0, colorsList[0][0], 0, 5, 5, 'red', 0),
+  fig(1, colorsList[1][0], 0, 4, 5, 'red', 0),
+  fig(2, colorsList[2][0], 0, 3, 5, 'red', 0),
+  fig(3, colorsList[3][0], 5, 0, 0, 'blue', 0),
+  fig(4, colorsList[4][0], 5, 1, 0, 'blue', 0),
+  fig(5, colorsList[5][0], 5, 2, 0, 'blue', 0),
 ]
 
 const cellsInfo = [];
@@ -91,6 +95,14 @@ for (let y=0; y<6; y++) {
     if ( [0, 5].includes(y) ) {
       cellsInfo[y][x].isRoot = true;
     };
+
+    if (y == 5) {
+      cellsInfo[y][x].posIdRed = x;
+      cellsInfo[y][x].posIdBlue = x+6;
+    } else if (y == 0) {
+      cellsInfo[y][x].posIdRed = 5-x+6;
+      cellsInfo[y][x].posIdBlue = 5-x;
+    }
 
   };
 };
@@ -147,6 +159,8 @@ const hoverCell = (posY, posX) => {
   areaCellInfoData.cell.rootCellPos.y = cellHovered.rootCellPos.y;
   areaCellInfoData.cell.rootCellPos.x = cellHovered.rootCellPos.x;
   areaCellInfoData.cell.colFigIds = cellHovered.colFigIds;
+  areaCellInfoData.cell.posIdRed = cellHovered.posIdRed;
+  areaCellInfoData.cell.posIdBlue = cellHovered.posIdBlue;
 
   if (cellHovered.figId !== '') {
     let figure = figures[cellHovered.figId]
@@ -158,6 +172,7 @@ const hoverCell = (posY, posX) => {
     areaCellInfoData.figure.selected = figure.selected
     areaCellInfoData.figure.color = figure.color
     areaCellInfoData.figure.player = figure.player
+    areaCellInfoData.figure.posId = figure.posId
   }
 
 }
@@ -201,6 +216,14 @@ const selectCell = (posY, posX) => {
     let figId = state.selectedFigureId;
     let rootCell = cellsInfo[cellSelected.rootCellPos.y][cellSelected.rootCellPos.x];
 
+    // unable to move backward
+    let newPosId = (figures[figId].player == 'red') ? cellSelected.posIdRed : cellSelected.posIdBlue;
+    console.log(figures[figId].posId, newPosId)
+    if (newPosId <= figures[figId].posId) {
+      console.log('backward')
+      return 1;
+    }
+
     // if selected cell has some figures - count new Y of position when it will be not a root cell ***************************
     if (cellSelected.figId !== '') { 
 
@@ -238,8 +261,9 @@ const selectCell = (posY, posX) => {
     figures[figId].xyPos.x = posX;
     figSelectToggle(figId, 'unselect');
     
+    figures[figId].posId = (figures[figId].player == 'red') ? rootCell.posIdRed : rootCell.posIdBlue;
     state.currentPlayer = (state.currentPlayer == 'red') ? 'blue' : 'red';
-
+    
     hoverCell(posY, posX);
 
     return 0;
