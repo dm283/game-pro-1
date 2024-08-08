@@ -3,6 +3,8 @@ import { reactive, ref } from 'vue';
 import Figure from './Figure.vue';
 import CellData from './CellData.vue';
 
+const commonClass = ref("bg-green-100 border border-4 border-green-600 w-14 text-center hover:bg-green-200");
+const rootClass = ref("bg-blue-100 border border-4 border-green-600 w-14 text-center hover:bg-green-200");
 
 const rows = []; const cells = [];
 for (let i=0; i<16; i++) { rows[i] = i;  };
@@ -134,18 +136,11 @@ for (let y=0; y<16; y++) {
 };
 
 // define figures in cells  -  red player
-// cellsInfo[3][0].figId = 2;
-// cellsInfo[4][0].figId = 1; 
-// cellsInfo[5][0].figId = 0; cellsInfo[5][0].colFigIds = [0, 1, 2];
 cellsInfo[15][0].figId = 0; cellsInfo[15][0].colFigIds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
 cellsInfo[14][0].figId = 1; cellsInfo[13][0].figId = 2; cellsInfo[12][0].figId = 3; cellsInfo[11][0].figId = 4; cellsInfo[10][0].figId = 5;
 cellsInfo[9][0].figId = 6; cellsInfo[8][0].figId = 7; cellsInfo[7][0].figId = 8; cellsInfo[6][0].figId = 9; cellsInfo[5][0].figId = 10;
 cellsInfo[4][0].figId = 11; cellsInfo[3][0].figId = 12; cellsInfo[2][0].figId = 13; cellsInfo[1][0].figId = 14;
-
 // // define figures in cells  -  blue player
-// cellsInfo[0][5].figId = 3; cellsInfo[0][5].colFigIds = [3, 4, 5];
-// cellsInfo[1][5].figId = 4; 
-// cellsInfo[2][5].figId = 5; 
 cellsInfo[0][11].figId = 15; cellsInfo[0][11].colFigIds = [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29];
 cellsInfo[1][11].figId = 16; cellsInfo[2][11].figId = 17; cellsInfo[3][11].figId = 18; cellsInfo[4][11].figId = 19; 
 cellsInfo[5][11].figId = 20; cellsInfo[6][11].figId = 21; cellsInfo[7][11].figId = 22; cellsInfo[8][11].figId = 23; 
@@ -339,11 +334,10 @@ const leaveGameField = () => {
 <template>
 
 <div class="grid grid-cols-2 w-max">
-
   <div class="ml-5">
     <table class="mx-auto mt-5" @mouseleave="leaveGameField()">
       <tr class="h-10" v-for="y in rows">
-        <td class="bg-green-100 border border-4 border-green-600 w-14 text-center hover:bg-green-200" 
+        <td :class="( [0, 15].includes(y) ) ? rootClass : commonClass"
           @click="selectCell(y, x)" @mouseenter="hoverCell(y, x)" v-for="x in cells">
             <div v-for="f in figures" :key="f.figId">
               <div v-if="y == f.xyPos.y & x == f.xyPos.x">
