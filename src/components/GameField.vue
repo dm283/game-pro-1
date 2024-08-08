@@ -117,15 +117,6 @@ cellsInfo[1][5].figId = 4;
 cellsInfo[2][5].figId = 5; 
 
 
-const checkNewPos = (y, x) => {
-  // return true if new pos is correct
-  if (y == 0 || y == 5) {  // || x == 0 || x == 5
-    return true;
-  }
-  return false;
-};
-
-
 const figSelectToggle = (id, action) => {
   //
   if (action == 'select') {
@@ -176,6 +167,15 @@ const hoverCell = (posY, posX) => {
   }
 
 }
+
+
+const checkNewPos = (y, x) => {
+  // return true if new pos is correct
+  if (y == 0 || y == 5) {  // || x == 0 || x == 5
+    return true;
+  }
+  return false;
+};
 
 
 const selectCell = (posY, posX) => {
