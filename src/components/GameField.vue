@@ -20,6 +20,7 @@ const areaCellInfoData = reactive({
     xyPos: {y: '', x: ''},
     selected: '',
     color: '',
+    player: ''
   },
 })
 
@@ -31,30 +32,38 @@ const state = {
   selectedFigureId: Number,
 }
 
-const fig = (id, color, x, y) => {
+const fig = (id, color, x, y, rootY, player) => {
   // create a figure
   return reactive({                             
     id: id,
-    rootPos: {y: 5, x: x},
+    rootPos: {y: rootY, x: x},
     xyPos: {y: y, x: x},
     selected: false,
     color: color,
+    player: player,
   })
 };
 
-const redPalette = ["text-pink-500", "text-red-500"]
+const redPalette = ["text-pink-500", "text-red-500"];
+const bluePalette = ["text-indigo-500", "text-blue-500"];
 
 const colorsList = [
   redPalette,
   redPalette,
   redPalette,
-]
+  bluePalette,
+  bluePalette,
+  bluePalette,
+];
 
 // list of figures
 const figures = [
-  fig(0, colorsList[0][0], 0, 5),
-  fig(1, colorsList[1][0], 0, 4),
-  fig(2, colorsList[2][0], 0, 3),
+  fig(0, colorsList[0][0], 0, 5, 5, 'red'),
+  fig(1, colorsList[1][0], 0, 4, 5, 'red'),
+  fig(2, colorsList[2][0], 0, 3, 5, 'red'),
+  fig(3, colorsList[3][0], 5, 0, 0, 'blue'),
+  fig(4, colorsList[4][0], 5, 1, 0, 'blue'),
+  fig(5, colorsList[5][0], 5, 2, 0, 'blue'),
 ]
 
 const cellsInfo = [];
@@ -62,24 +71,30 @@ for (let y=0; y<6; y++) {
   cellsInfo[y] = [];
   for (let x=0; x<6; x++) {
 
+    let rootY = (y <= 2) ? 0 : 5;
+
     cellsInfo[y][x] = {                     
       figId: '',
       isRoot: false,
-      rootCellPos: {y: 5, x: x},
+      rootCellPos: {y: rootY, x: x},
       colFigIds: [],
-    }
+    };
 
-    if (y == 5) {
+    if ( [0, 5].includes(y) ) {
       cellsInfo[y][x].isRoot = true;
-    }
+    };
 
-  }
-}
+  };
+};
 
-// define figures in cells
+// define figures in cells  -  red player
 cellsInfo[3][0].figId = 2;
 cellsInfo[4][0].figId = 1; 
-cellsInfo[5][0].figId = 0; cellsInfo[5][0].colFigIds = [0, 1, 2]; cellsInfo[5][0].isRoot = true;
+cellsInfo[5][0].figId = 0; cellsInfo[5][0].colFigIds = [0, 1, 2];
+// define figures in cells  -  blue player
+cellsInfo[0][5].figId = 3; cellsInfo[0][5].colFigIds = [3, 4, 5];
+cellsInfo[1][5].figId = 4; 
+cellsInfo[2][5].figId = 5; 
 
 
 const checkNewPos = (y, x) => {
@@ -109,7 +124,6 @@ const figSelectToggle = (id, action) => {
 
 const hoverCell = (posY, posX) => {
   // hovered cell actions
-  console.log(134123)
   showData.value = true;
   let cellHovered = cellsInfo[posY][posX];
   areaCellInfoData.cell.posX = posX;
@@ -129,6 +143,7 @@ const hoverCell = (posY, posX) => {
     areaCellInfoData.figure.xyPos.x = figure.xyPos.x
     areaCellInfoData.figure.selected = figure.selected
     areaCellInfoData.figure.color = figure.color
+    areaCellInfoData.figure.player = figure.player
   }
 
 }
@@ -143,6 +158,7 @@ const selectCell = (posY, posX) => {
   if ( cellSelected.figId !== '' & state.status == 'unselected' ) {  
     let rootCell = cellsInfo[cellSelected.rootCellPos.y][cellSelected.rootCellPos.x];
     let figId = rootCell.colFigIds[ rootCell.colFigIds.length - 1 ];
+    console.log(rootCell)
     figSelectToggle(figId, 'select');
     hoverCell(posY, posX);
     return 0;
@@ -191,7 +207,7 @@ const selectCell = (posY, posX) => {
     rootCellPrev.colFigIds.pop();   
 
     // change info in figure
-    figures[figId].rootPos.y = 5;
+    figures[figId].rootPos.y = (posY <= 2) ? 0: 5;
     figures[figId].rootPos.x = posX;
     figures[figId].xyPos.y = posY;
     figures[figId].xyPos.x = posX;
