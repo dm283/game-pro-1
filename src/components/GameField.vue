@@ -84,7 +84,7 @@ cellsInfo[5][0].figId = 0; cellsInfo[5][0].colFigIds = [0, 1, 2]; cellsInfo[5][0
 
 const checkNewPos = (y, x) => {
   // return true if new pos is correct
-  if (y == 0 || y == 5 || x == 0 || x == 5) {
+  if (y == 0 || y == 5) {  // || x == 0 || x == 5
     return true;
   }
   return false;
@@ -167,7 +167,14 @@ const selectCell = (posY, posX) => {
     let rootCell = cellsInfo[cellSelected.rootCellPos.y][cellSelected.rootCellPos.x];
 
     // if selected cell has some figures - count new Y of position when it will be not a root cell ***************************
-    if (cellSelected.figId !== '') { posY = posY - rootCell.colFigIds.length };
+    if (cellSelected.figId !== '') { 
+      if (posY == 5) {
+        posY = posY - rootCell.colFigIds.length 
+      }
+      else if (posY == 0) {
+        posY = posY + rootCell.colFigIds.length 
+      }
+    };
 
     // add info to new pos and root
     cellsInfo[posY][posX].figId = figId;
